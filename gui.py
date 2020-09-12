@@ -4,7 +4,7 @@ import cv2
 import os
 from shutil import rmtree, copyfile
 
-from imagesort import sort_images, find_reference_image_old, plot_peaks, get_peaks, write_video, get_similarity_scores
+from timelapse import sort_images, find_reference_image_old, plot_peaks, get_peaks, write_video, get_similarity_scores
 
 class Ui(QtWidgets.QMainWindow):
     def __init__(self):
