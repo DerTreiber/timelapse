@@ -34,7 +34,7 @@ def find_reference_image_old(image_paths, prominence=0.4):
     # cv2.waitKey()
     most_hits = np.argmax(np.array([len(peaks) for peaks in peaks_list]))
 
-    return paths[most_hits]
+    return image_paths[most_hits]
 
 def gather_files(sourcedir, file_ext='.JPG'):
     """Returns list of files with speficied file extension from source directory.
@@ -137,11 +137,11 @@ def get_peaks_threshold(scores, threshold=0.3):
     return normalized_scores > threshold
 
 def get_distance_transform(img):
-    ret,th1 = cv2.threshold(img,127,255,cv2.THRESH_BINARY)
-    # th2 = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_MEAN_C,\
-    #             cv2.THRESH_BINARY,11,2)
-    # th3 = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
-    #             cv2.THRESH_BINARY,11,2)
+    ret,th1 = cv2.threshold(img,70,255,cv2.THRESH_BINARY)
+    th2 = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_MEAN_C,\
+                cv2.THRESH_BINARY,333,2)
+    th3 = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
+                cv2.THRESH_BINARY,333,2)
 
     
     # edges = cv2.Canny(img,100,200)
@@ -151,13 +151,16 @@ def get_distance_transform(img):
     # cv2.imshow('edges + distance transform', image_show)
     # image_threshold = np.vstack([img,th1])
     # image_threshold = cv2.resize(image_threshold, (1000, 1000))
+    # cv2.imshow('threshold global', image_threshold)
+    # image_threshold_adaptive = np.vstack([img,th2])
+    # image_threshold_adaptive = cv2.resize(image_threshold_adaptive, (1000, 1000))
+    # cv2.imshow('threshold adaptive mean', image_threshold_adaptive)
     # image_threshold_adaptive = np.vstack([img,th3])
     # image_threshold_adaptive = cv2.resize(image_threshold_adaptive, (1000, 1000))
-    # cv2.imshow('threshold global', image_threshold)
-    # cv2.imshow('threshold adaptive', image_threshold_adaptive)
+    # cv2.imshow('threshold adaptive gaussian', image_threshold_adaptive)
 
     # cv2.waitKey()
-    return th1
+    return th3
 
 def write_video(paths, out_path, codec=cv2.VideoWriter_fourcc(*'MJPG'), fps=20.0):
     print('Writing output to video.')
@@ -221,6 +224,16 @@ def find_reference_image(image_paths, prominence=0.4):
 
     return paths[most_hits]
 
+def test_features(path):
+    img = cv2.imread(path, cv2.IMREAD_COLOR)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    corners = cv2.goodFeaturesToTrack(gray,25,0.01,10)
+    corners = np.int0(corners)
+    for i in corners:
+        x,y = i.ravel()
+        cv2.circle(img,(x,y),3,255,-1)
+    plt.imshow(img),plt.show()
+
 
 if __name__ == "__main__":
     """
@@ -229,6 +242,7 @@ if __name__ == "__main__":
         - prominence_search
         - prominence_sort
     """
+    # test_features('/home/treiber/andras/timelapsedata/126_PANA/P1260179.JPG')
     batch_size = 100
     prominence_search = 0.7
     prominence_sort = 0.2
@@ -240,8 +254,8 @@ if __name__ == "__main__":
     # sourcedir = '/media/treiber/5EC43479C434560D/Users/JulianTreiber/andras/102_PANA'
     # targetdir = '/media/treiber/5EC43479C434560D/Users/JulianTreiber/andras/102_PANA_sorted'
     
-    sourcedir = '/home/treiber/andras/TIMELAPSEDINO'
-    targetdir = '/home/treiber/andras/TIMELAPSEDINOSORTED'
+    sourcedir = '/home/treiber/andras/timelapsedata/126_PANA'
+    targetdir = '/home/treiber/andras/sorted'
 
 
     if not os.path.isdir(targetdir):
@@ -251,8 +265,8 @@ if __name__ == "__main__":
     paths = gather_files(sourcedir)[100:]
     start_time_find_ref_image = time()
     # path_reference = find_reference_image(paths[:batch_size], prominence=prominence_search)
-    # path_reference = find_reference_image_old(paths[:batch_size], prominence=prominence_search)
-    path_reference = '/home/treiber/andras/TIMELAPSEDINO/P1240263.JPG'
+    path_reference = find_reference_image_old(paths[:batch_size], prominence=prominence_search)
+    # path_reference = '/home/treiber/andras/TIMELAPSEDINO/P1240263.JPG'
     cv2.imshow('reference image', cv2.resize(cv2.imread(path_reference), (1000,500)))
     cv2.waitKey()
 

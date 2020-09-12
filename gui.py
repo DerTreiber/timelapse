@@ -14,8 +14,10 @@ class Ui(QtWidgets.QMainWindow):
         self.loadFilesBtn = self.findChild(QtWidgets.QPushButton, 'selectFilesBtn')
         self.loadFilesBtn.clicked.connect(self.load_files)
         self.startBtn = self.findChild(QtWidgets.QPushButton, 'startBtn')
-        # self.startBtn.clicked.connect(self.startBtn)
+        self.startBtn.clicked.connect(self.start)
         self.filesListWidget = self.findChild(QtWidgets.QListWidget, 'filesListWidget')
+        self.referenceView = self.findChild(QtWidgets.QLabel, 'referenceView')
+        # self.referenceView.
     
     def load_files(self):
         fnames = QtWidgets.QFileDialog.getOpenFileNames(self, 'Open files', 
@@ -26,7 +28,7 @@ class Ui(QtWidgets.QMainWindow):
     def getItems(self, listwidget):
         items = []
         for index in range(listwidget.count()):
-            items.append(listwidget.item(index))
+            items.append(listwidget.item(index).text())
         return items
 
 
@@ -37,8 +39,8 @@ class Ui(QtWidgets.QMainWindow):
         targetdir = './sorted'
         ### gather parameters
         batch_size = 40
-        prominence_search = 0.7
-        prominence_sort = 0.2
+        prominence_search = 0.4
+        prominence_sort = 0.4
 
         paths = self.getItems(self.filesListWidget)
 
@@ -55,13 +57,13 @@ class Ui(QtWidgets.QMainWindow):
         peak_indices = get_peaks(similarity_scores)
         plot_peaks(similarity_scores, peak_indices)
 
-        print('Copying images to {}.'.format(targetdir))
-        rmtree(targetdir)
-        os.mkdir(targetdir)
-        for i in peak_indices:
-            copyfile(paths[i], os.path.join(targetdir, os.path.split(paths[i])[-1]))
-
-        write_video(sorted([os.path.join(targetdir, x) for x in os.listdir(targetdir)]), 'res.mp4', codec=cv2.VideoWriter_fourcc(*'DIVX'))
+        # print('Copying images to {}.'.format(targetdir))
+        # rmtree(targetdir)
+        # os.mkdir(targetdir)
+        # for i in peak_indices:
+        #     copyfile(paths[i], os.path.join(targetdir, os.path.split(paths[i])[-1]))
+        paths = [paths[i] for i in peak_indices]
+        write_video(paths, 'res.mp4', codec=cv2.VideoWriter_fourcc(*'DIVX'))
 
 
 app = QtWidgets.QApplication(sys.argv) # Create an instance of QtWidgets.QApplication
