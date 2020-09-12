@@ -282,7 +282,7 @@ if __name__ == "__main__":
     for i in peak_indices:
         copyfile(paths[i], os.path.join(targetdir, os.path.split(paths[i])[-1]))
 
-    write_video(sorted([os.path.join(targetdir, x) for x in os.listdir(targetdir)]), '102_PANA.mp4', codec=cv2.VideoWriter_fourcc(*'DIVX'))
+    write_video(sorted([os.path.join(targetdir, x) for x in os.listdir(targetdir)]), 'res.mp4', codec=cv2.VideoWriter_fourcc(*'DIVX'))
     end_time_write_video = time() - start_time_write_video
 
     total_time = time() - start_time 
