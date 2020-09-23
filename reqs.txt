@@ -3,3 +3,4 @@ matplotlib
 opencv
 pyqt
 tqdm
+scikit-image

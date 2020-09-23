@@ -101,9 +101,13 @@ class Ui(QtWidgets.QMainWindow):
     def load_files(self):
         fnames = QtWidgets.QFileDialog.getOpenFileNames(self, 'Open files', 
                                 '/home/treiber/andras/timelapsedata',"Image files (*.jpg *.gif *.png *.jpeg)")[0]
-        # print(fnames)
         self.update_files_list_widget(fnames)
     
+    def get_save_filename(self):
+        fname = QtWidgets.QFileDialog.getSaveFileName(self, 'Open files', 
+                                './res.mp4',"Video File (*.mp4)")[0]
+        return fname
+
     def clear_files(self):
         self.filesListWidget.clear()
     
@@ -124,11 +128,11 @@ class Ui(QtWidgets.QMainWindow):
             paths = fh.readlines()
         paths = [el.replace('\n', '') for el in paths if el.replace('\n', '') != '']
 
-        write_video(paths, 'res2.mp4', codec=cv2.VideoWriter_fourcc(*'DIVX'))
+        vid_path = self.get_save_filename()
+        write_video(paths, vid_path, codec=cv2.VideoWriter_fourcc(*'DIVX'))
         print('Finished Video.')
 
     def start(self):
-        # targetdir = './sorted'
         ### gather parameters
         batch_size = self.batchSlider.value()
         prominence = self.sortSlider.value() / self.sortSlider.maximum()
@@ -143,7 +147,7 @@ class Ui(QtWidgets.QMainWindow):
         if (self.refImageCB.isChecked() and (self.ref_image is not None)):
             path_reference = self.ref_image
         else:
-            path_reference = tl.find_reference_image_old(paths[:batch_size], prominence=prominence)
+            path_reference = tl.find_reference_image(paths[:batch_size], prominence=prominence)
 
         img = cv2.imread(path_reference)
         cv2.imshow('reference image', cv2.resize(img, (1000, int(img.shape[0] * 1000/img.shape[1]))))
@@ -166,7 +170,9 @@ class Ui(QtWidgets.QMainWindow):
         with open('res.txt', 'w') as f:
             for path in paths:
                 f.write(path+'\n')
-        write_video(paths, 'res.mp4', codec=cv2.VideoWriter_fourcc(*'DIVX'))
+
+        vid_path = self.get_save_filename()
+        write_video(paths, vid_path, codec=cv2.VideoWriter_fourcc(*'DIVX'))
         print('Finished Video')
         cv2.destroyAllWindows()
         self.set_default_values()

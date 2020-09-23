@@ -5,7 +5,6 @@ from time import time
 import numpy as np
 np.set_printoptions(precision=2)
 import cv2
-from skimage.metrics import structural_similarity as ssim
 import matplotlib.pyplot as plt
 from scipy.signal import find_peaks, peak_prominences
 from tqdm import tqdm
@@ -17,7 +16,7 @@ class timelapse():
         self.adaptive_threshold = adaptive_threshold
         self.display = display
 
-    def find_reference_image_old(self, image_paths, prominence=0.4):
+    def find_reference_image(self, image_paths, prominence=0.4):
         peaks_list = []
         images = [self.get_distance_transform(cv2.imread(path, cv2.IMREAD_GRAYSCALE)) for path in image_paths]
         scores = []
@@ -28,14 +27,14 @@ class timelapse():
                 similarity_scores.append(self.similarity_score(ref_image, image))
                 image_show = np.vstack([ref_image, image])
                 image_show = cv2.resize(image_show, (1000, 1000))
-                # if self.display:
-                    # cv2.imshow('images', image_show)
-                    # if int(cv2.waitKey(10)) == 112:
-                    #     cv2.waitKey()
+                if self.display:
+                    cv2.imshow('images', image_show)
+                    if int(cv2.waitKey(10)) == 112:
+                        cv2.waitKey()
             peaks_list.append(self.get_peaks(similarity_scores, prominence=prominence))
             scores.append(np.array(similarity_scores))
-            # print('Similarity scores of {}:'.format(os.path.split(path)[-1]))
-            # print(scores[-1])
+            print('Similarity scores of {}:'.format(os.path.split(path)[-1]))
+            print(scores[-1])
         
 
         scores = np.vstack(scores)
@@ -56,20 +55,6 @@ class timelapse():
             [list(str)]: List of files. 
         """
         return sorted([os.path.join(sourcedir, x) for x in os.listdir(sourcedir) if os.path.splitext(x)[1] == file_ext])
-
-    # def get_similarity_scores_matrix(images, image_paths):
-    #     resize_factor = 4
-        
-    #     similarity_scores = np.zeros([len(images), len(images)])
-    #     for i in range(len(images)):
-    #         for j in range(len(images)):
-    #             similarity_scores[i,j] = similarity_score(images[i], images[j])
-    #             print('Similarity score {} and {}: {:.2f}'.format(image_paths[i],image_paths[j],similarity_scores[i,j]))
-    #             display_img = np.vstack([images[i],images[j]])
-    #             display_img = cv2.resize(display_img, (display_img.shape[1]//resize_factor,display_img.shape[0]//resize_factor))
-    #             # cv2.imshow('images', display_img)
-    #             # cv2.waitKey(10)
-    #     return similarity_scores
 
     def get_new_ref_image(self, scores, image_paths):
         peak_indices = self.get_peaks(scores)
@@ -129,16 +114,12 @@ class timelapse():
         return np.array(similarity_scores)
 
     def similarity_score(self, image1, image2):
-        ### TODO korrelation von kantenbild
-        # return ssim(image1, image2)
         return 1 - (np.count_nonzero(image1-image2))/(image1.shape[0]*image1.shape[1])
-
 
     def get_peaks(self, scores, prominence=0.2):
         normalized_scores = (scores - np.min(scores)) * (1/np.max(scores))
         normalized_scores = normalized_scores * (1/np.max(normalized_scores))
         peaks,_ = find_peaks(normalized_scores, prominence=prominence)
-        # prominences = peak_prominences(scores, peaks)[0]
         return peaks
 
     def get_peaks_threshold(self, scores, threshold=0.3):
@@ -160,47 +141,6 @@ class timelapse():
         plt.scatter(peaks, scores[peaks], marker='x', color='red')
         plt.show(block=False)
         plt.savefig('peaks.png')
-
-    ### TODO
-    ### find reference
-    ### find image with the most similar image
-
-    def find_reference_image(self, image_paths, prominence=0.4):
-        peaks_list = []
-        images = [self.get_distance_transform(cv2.imread(path, cv2.IMREAD_GRAYSCALE)) for path in image_paths]
-        scores = []
-        for i, (ref_image, path) in enumerate(zip(images, image_paths)):
-            print(path)
-            # similarity_scores = np.zeros([len(image_paths)])
-            similarity_scores = []
-            for image in images:
-                similarity_scores.append(self.similarity_score(ref_image, image))
-                image_show = np.vstack([ref_image, image])
-                image_show = cv2.resize(image_show, (1000, 1000))
-                # cv2.imshow('images', image_show)
-                # if int(cv2.waitKey(10)) == 112:
-                #     cv2.waitKey()
-            scores.append(np.array(similarity_scores))
-            print('Similarity score of {}:'.format(os.path.split(path)[-1]))
-            print(scores[-1])
-
-        peaks_list = []
-        for prominence in np.arange(start=1, stop=0, step=-0.1):
-            for score in scores:
-                peaks_list.append(self.get_peaks(score, prominence=prominence))
-            
-            len_peaks = np.array([len(peaks) for peaks in peaks_list])
-            most_hits = np.argmax(len_peaks)
-            if len_peaks[most_hits] >= 3:
-                break
-        
-
-        scores = np.vstack(scores)
-        print(np.array([len(peaks) for peaks in peaks_list]))
-        # cv2.waitKey()
-        most_hits = np.argmax(np.array([len(peaks) for peaks in peaks_list]))
-
-        return paths[most_hits]
 
 
 def write_video(paths, out_path, codec=cv2.VideoWriter_fourcc(*'MJPG'), fps=20.0):
@@ -226,7 +166,6 @@ def test_features(path):
         x,y = i.ravel()
         cv2.circle(img,(x,y),3,255,-1)
     plt.imshow(img),plt.show()
-
 
 if __name__ == "__main__":
     """
@@ -259,7 +198,7 @@ if __name__ == "__main__":
     paths = tl.gather_files(sourcedir)[100:]
     start_time_find_ref_image = time()
     # path_reference = find_reference_image(paths[:batch_size], prominence=prominence_search)
-    path_reference = tl.find_reference_image_old(paths[:batch_size], prominence=prominence_search)
+    path_reference = tl.find_reference_image(paths[:batch_size], prominence=prominence_search)
     # path_reference = '/home/treiber/andras/TIMELAPSEDINO/P1240263.JPG'
     cv2.imshow('reference image', cv2.resize(cv2.imread(path_reference), (1000,500)))
     cv2.waitKey()
