@@ -147,7 +147,7 @@ class Ui(QtWidgets.QMainWindow):
 
         ### set reference image
         if self.findRefImageCB.isChecked():
-            path_reference = tl.find_reference_image_old(paths[:batch_size], prominence=prominence)
+            path_reference = tl.find_reference_image(paths[:batch_size], prominence=prominence)
         else:
             path_reference = self.ref_image_path
         ref_image = cv2.imread(path_reference, cv2.IMREAD_GRAYSCALE)

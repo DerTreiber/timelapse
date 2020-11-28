@@ -157,15 +157,15 @@ def write_video(paths, out_path, codec=cv2.VideoWriter_fourcc(*'MJPG'), fps=20.0
 
     vid_writer.release()        
 
-def test_features(path):
-    img = cv2.imread(path, cv2.IMREAD_COLOR)
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    corners = cv2.goodFeaturesToTrack(gray,25,0.01,10)
-    corners = np.int0(corners)
-    for i in corners:
-        x,y = i.ravel()
-        cv2.circle(img,(x,y),3,255,-1)
-    # plt.imshow(img),plt.show()
+# def test_features(path):
+#     img = cv2.imread(path, cv2.IMREAD_COLOR)
+#     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+#     corners = cv2.goodFeaturesToTrack(gray,25,0.01,10)
+#     corners = np.int0(corners)
+#     for i in corners:
+#         x,y = i.ravel()
+#         cv2.circle(img,(x,y),3,255,-1)
+#     plt.imshow(img),plt.show()
 
 if __name__ == "__main__":
     """
@@ -218,7 +218,7 @@ if __name__ == "__main__":
 
     ### get peaks, which are matching images
     peak_indices = tl.get_peaks(similarity_scores)
-    tl.plot_peaks(similarity_scores, peak_indices)
+    # tl.plot_peaks(similarity_scores, peak_indices)
     end_time_similarity_scores = time() - start_time_similarity_scores
 
 
