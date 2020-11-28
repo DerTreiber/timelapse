@@ -5,8 +5,7 @@ from time import time
 import numpy as np
 np.set_printoptions(precision=2)
 import cv2
-from skimage.metrics import structural_similarity as ssim
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from scipy.signal import find_peaks, peak_prominences
 from tqdm import tqdm
 
@@ -56,20 +55,6 @@ class timelapse():
             [list(str)]: List of files. 
         """
         return sorted([os.path.join(sourcedir, x) for x in os.listdir(sourcedir) if os.path.splitext(x)[1] == file_ext])
-
-    # def get_similarity_scores_matrix(images, image_paths):
-    #     resize_factor = 4
-        
-    #     similarity_scores = np.zeros([len(images), len(images)])
-    #     for i in range(len(images)):
-    #         for j in range(len(images)):
-    #             similarity_scores[i,j] = similarity_score(images[i], images[j])
-    #             print('Similarity score {} and {}: {:.2f}'.format(image_paths[i],image_paths[j],similarity_scores[i,j]))
-    #             display_img = np.vstack([images[i],images[j]])
-    #             display_img = cv2.resize(display_img, (display_img.shape[1]//resize_factor,display_img.shape[0]//resize_factor))
-    #             # cv2.imshow('images', display_img)
-    #             # cv2.waitKey(10)
-    #     return similarity_scores
 
     def get_new_ref_image(self, scores, image_paths):
         peak_indices = self.get_peaks(scores)
@@ -129,8 +114,6 @@ class timelapse():
         return np.array(similarity_scores)
 
     def similarity_score(self, image1, image2):
-        ### TODO korrelation von kantenbild
-        # return ssim(image1, image2)
         return 1 - (np.count_nonzero(image1-image2))/(image1.shape[0]*image1.shape[1])
 
 
@@ -155,11 +138,11 @@ class timelapse():
             ret,th = cv2.threshold(img,self.threshold,255,cv2.THRESH_BINARY)
         return th
 
-    def plot_peaks(self, scores, peaks):
-        plt.plot(np.arange(len(scores)), scores)
-        plt.scatter(peaks, scores[peaks], marker='x', color='red')
-        plt.show(block=False)
-        plt.savefig('peaks.png')
+    # def plot_peaks(self, scores, peaks):
+    #     plt.plot(np.arange(len(scores)), scores)
+    #     plt.scatter(peaks, scores[peaks], marker='x', color='red')
+    #     plt.show(block=False)
+    #     plt.savefig('peaks.png')
 
     ### TODO
     ### find reference
@@ -225,7 +208,7 @@ def test_features(path):
     for i in corners:
         x,y = i.ravel()
         cv2.circle(img,(x,y),3,255,-1)
-    plt.imshow(img),plt.show()
+    # plt.imshow(img),plt.show()
 
 
 if __name__ == "__main__":

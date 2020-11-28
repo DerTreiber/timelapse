@@ -15,90 +15,6 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="1" column="4">
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QPushButton" name="videoFromPathsBtn">
-        <property name="toolTip">
-         <string>Write Video from res.txt</string>
-        </property>
-        <property name="text">
-         <string>Video from .txt</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="displayCB">
-        <property name="toolTip">
-         <string>Whether to display intermediate results</string>
-        </property>
-        <property name="text">
-         <string>Display</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="startBtn">
-        <property name="text">
-         <string>Start</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item row="1" column="1">
-     <layout class="QVBoxLayout" name="verticalLayout_5">
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Files</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QListWidget" name="filesListWidget"/>
-      </item>
-      <item>
-       <widget class="QLabel" name="refImageLabel">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="text">
-         <string>Reference Image: </string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="referenceView">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
     <item row="1" column="3">
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
@@ -136,12 +52,12 @@
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="refImageCB">
+       <widget class="QCheckBox" name="findRefImageCB">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="text">
-         <string>Use Reference Image</string>
+         <string>Find Start  (experimental)</string>
         </property>
        </widget>
       </item>
@@ -273,6 +189,97 @@
       </item>
      </layout>
     </item>
+    <item row="1" column="1">
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Files</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QListWidget" name="filesListWidget"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="refImageLabel">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="text">
+         <string>Reference Image: </string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="referenceView">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="4">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QPushButton" name="videoFromPathsBtn">
+        <property name="toolTip">
+         <string>Write Video from res.txt</string>
+        </property>
+        <property name="text">
+         <string>Video from .txt</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="displayCB">
+        <property name="toolTip">
+         <string>Whether to display intermediate results</string>
+        </property>
+        <property name="text">
+         <string>Display</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="startBtn">
+        <property name="text">
+         <string>Start</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="2" column="4">
+     <widget class="QPushButton" name="pushButton_test">
+      <property name="text">
+       <string>test</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -281,7 +288,7 @@
      <x>0</x>
      <y>0</y>
      <width>859</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

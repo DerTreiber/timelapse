@@ -11,47 +11,43 @@ class Ui(QtWidgets.QMainWindow):
         super(Ui, self).__init__() # Call the inherited classes __init__ method
         uic.loadUi('mainWindow.ui', self) # Load the .ui file
         self.show() # Show the GUI
-        self.loadFilesBtn = self.findChild(QtWidgets.QPushButton, 'selectFilesBtn')
-        self.loadFilesBtn.clicked.connect(self.load_files)
-        self.clearFilesBtn = self.findChild(QtWidgets.QPushButton, 'clearFilesBtn')
+        self.selectFilesBtn.clicked.connect(self.load_files)
         self.clearFilesBtn.clicked.connect(self.clear_files)
-        self.startBtn = self.findChild(QtWidgets.QPushButton, 'startBtn')
         self.startBtn.clicked.connect(self.start)
-        self.displayCB = self.findChild(QtWidgets.QCheckBox, 'displayCB')
-        self.filesListWidget = self.findChild(QtWidgets.QListWidget, 'filesListWidget')
-        self.referenceView = self.findChild(QtWidgets.QLabel, 'referenceView')
         self.set_image_label('sunshine.jpg')
-        self.videoFromPathsBtn = self.findChild(QtWidgets.QPushButton, 'videoFromPathsBtn')
         self.videoFromPathsBtn.clicked.connect(self.video_from_paths)
 
-        self.setRefImgBtn = self.findChild(QtWidgets.QPushButton, 'setRefImgBtn')
         self.setRefImgBtn.clicked.connect(self.set_reference_image)
     
         ### sliders
-        self.sortSlider = self.findChild(QtWidgets.QSlider, 'sortSlider')
         self.sortSlider.sliderMoved.connect(self.slider_changed)
         self.sortSlider.sliderReleased.connect(self.slider_changed)
-        self.thresholdSlider = self.findChild(QtWidgets.QSlider, 'thresholdSlider')
         self.thresholdSlider.sliderMoved.connect(self.slider_changed)
         self.thresholdSlider.sliderReleased.connect(self.slider_changed)
-        self.batchSlider = self.findChild(QtWidgets.QSlider, 'batchSlider')
         self.batchSlider.sliderMoved.connect(self.slider_changed)
         self.batchSlider.sliderReleased.connect(self.slider_changed)
-        self.setDefaultBtn = self.findChild(QtWidgets.QPushButton, 'setDefaultBtn')
         self.setDefaultBtn.clicked.connect(self.set_default_sliders)
-        self.adaptiveCB = self.findChild(QtWidgets.QCheckBox, 'adaptiveCB')
         self.adaptiveCB.stateChanged.connect(self.adaptive_checked)
-        self.refImageCB = self.findChild(QtWidgets.QCheckBox, 'refImageCB')
         self.slider_changed()
         self.set_default_values()
 
+        ### test
+        self.pushButton_test.clicked.connect(self.foo)
+
+    def foo(self):
+        msg = QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Information)
+        msg.setText("Finished Video")
+        msg.setWindowTitle("Info")
+        retval = msg.exec_()
+
     def set_default_values(self):
-        self.ref_image = None
+        self.ref_image_path = None
         self.slider_changed()
         self.findChild(QtWidgets.QLabel, 'refImageLabel').setText('Reference Image: ')
         self.findChild(QtWidgets.QLabel, 'refImageLabel').setEnabled(False)
-        self.refImageCB.setChecked(False)
-        self.refImageCB.setEnabled(False)
+        self.findRefImageCB.setChecked(False)
+        self.findRefImageCB.setEnabled(True)
 
     def set_image_label(self, path):
         input_image = cv2.imread(path, cv2.IMREAD_COLOR)
@@ -71,11 +67,9 @@ class Ui(QtWidgets.QMainWindow):
     def set_reference_image(self):
         fname = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', 
                                 '/home/treiber/andras/timelapsedata',"Image files (*.jpg *.gif *.png *.jpeg)")[0]
-        self.ref_image = fname
+        self.ref_image_path = fname
         self.findChild(QtWidgets.QLabel, 'refImageLabel').setText('Reference Image: ' +os.path.split(fname)[-1])
         self.findChild(QtWidgets.QLabel, 'refImageLabel').setEnabled(True)
-        self.refImageCB.setEnabled(True)
-        self.refImageCB.setChecked(True)
 
 
     def slider_changed(self):
@@ -128,48 +122,56 @@ class Ui(QtWidgets.QMainWindow):
         print('Finished Video.')
 
     def start(self):
-        # targetdir = './sorted'
+        if (not self.findRefImageCB.isChecked() and self.ref_image_path is None):
+            print('No reference Image selected.')
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Information)
+            msg.setText("Please select reference image or choose \"Find Start (experimental)\".")
+            msg.setWindowTitle("Info")
+            retval = msg.exec_()
+            return 0
+
         ### gather parameters
         batch_size = self.batchSlider.value()
         prominence = self.sortSlider.value() / self.sortSlider.maximum()
         threshold = self.thresholdSlider.value()
         adaptive_threshold = self.adaptiveCB.isChecked()
-        # prominence_search = 0.4
-        # prominence_sort = 0.4
         tl = timelapse(threshold=threshold, adaptive_threshold=adaptive_threshold, display=self.displayCB.isChecked())
 
         paths = self.get_items(self.filesListWidget)
 
-        if (self.refImageCB.isChecked() and (self.ref_image is not None)):
-            path_reference = self.ref_image
-        else:
+        ### set reference image
+        if self.findRefImageCB.isChecked():
             path_reference = tl.find_reference_image_old(paths[:batch_size], prominence=prominence)
-
-        img = cv2.imread(path_reference)
-        cv2.imshow('reference image', cv2.resize(img, (1000, int(img.shape[0] * 1000/img.shape[1]))))
-        cv2.waitKey()
-
+        else:
+            path_reference = self.ref_image_path
         ref_image = cv2.imread(path_reference, cv2.IMREAD_GRAYSCALE)
+        
         similarity_scores = tl.get_similarity_scores(ref_image, paths, prominence=prominence, batch_size=batch_size)
 
+        cv2.destroyAllWindows()
 
         ### get peaks, which are matching images
         peak_indices = tl.get_peaks(similarity_scores)
-        tl.plot_peaks(similarity_scores, peak_indices)
 
-        # print('Copying images to {}.'.format(targetdir))
-        # rmtree(targetdir)
-        # os.mkdir(targetdir)
-        # for i in peak_indices:
-        #     copyfile(paths[i], os.path.join(targetdir, os.path.split(paths[i])[-1]))
         paths = [paths[i] for i in peak_indices]
         with open('res.txt', 'w') as f:
             for path in paths:
                 f.write(path+'\n')
-        write_video(paths, 'res.mp4', codec=cv2.VideoWriter_fourcc(*'DIVX'))
-        print('Finished Video')
-        cv2.destroyAllWindows()
+        
+        savefile_name = QtWidgets.QFileDialog.getSaveFileName(self, 'Save timelapse', 
+                                './timelapse.mp4',"MP4 Video (*.mp4)")[0]
+
+        write_video(paths, savefile_name, codec=cv2.VideoWriter_fourcc(*'DIVX'))
+        print('Finished Video.')
+        msg = QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Information)
+        msg.setText("Finished Video.")
+        msg.setWindowTitle("Info")
+        retval = msg.exec_()
+
         self.set_default_values()
+        return 1
 
 
 app = QtWidgets.QApplication(sys.argv) # Create an instance of QtWidgets.QApplication
