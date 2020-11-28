@@ -95,9 +95,13 @@ class Ui(QtWidgets.QMainWindow):
     def load_files(self):
         fnames = QtWidgets.QFileDialog.getOpenFileNames(self, 'Open files', 
                                 '/home/treiber/andras/timelapsedata',"Image files (*.jpg *.gif *.png *.jpeg)")[0]
-        # print(fnames)
         self.update_files_list_widget(fnames)
     
+    def get_save_filename(self):
+        fname = QtWidgets.QFileDialog.getSaveFileName(self, 'Open files', 
+                                './res.mp4',"Video File (*.mp4)")[0]
+        return fname
+
     def clear_files(self):
         self.filesListWidget.clear()
     
@@ -118,7 +122,8 @@ class Ui(QtWidgets.QMainWindow):
             paths = fh.readlines()
         paths = [el.replace('\n', '') for el in paths if el.replace('\n', '') != '']
 
-        write_video(paths, 'res2.mp4', codec=cv2.VideoWriter_fourcc(*'DIVX'))
+        vid_path = self.get_save_filename()
+        write_video(paths, vid_path, codec=cv2.VideoWriter_fourcc(*'DIVX'))
         print('Finished Video.')
 
     def start(self):
