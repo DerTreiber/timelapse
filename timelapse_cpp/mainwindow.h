@@ -17,5 +17,22 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    QString ref_image_path;
+
+private slots:
+    void foo();
+    //void adaptive_checked();
+    //void clear_files();
+    // QString [] get_items();
+    //QString get_save_filename();
+    //void set_default_sliders();
+    //void set_default_values();
+    //void set_image_label();
+    //void set_reference_image();
+    //void slider_changed();
+    //void start();
+    //void update_files_list_widget();
+    //void video_from_paths();
+
 };
 #endif // MAINWINDOW_H
