@@ -132,3 +132,6 @@ dmypy.json
 *.mp4
 res.txt
 .vscode/settings.json
+
+# cpp build
+build-timelapse_cpp-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/*

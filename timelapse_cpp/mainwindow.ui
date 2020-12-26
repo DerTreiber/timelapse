@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Imagesort</class>
- <widget class="QMainWindow" name="Imagesort">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>859</width>
-    <height>631</height>
+    <width>800</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_2">
-    <item row="1" column="3">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="1">
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
        <widget class="QPushButton" name="selectFilesBtn">
@@ -189,7 +189,7 @@
       </item>
      </layout>
     </item>
-    <item row="1" column="1">
+    <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout_5">
       <item>
        <widget class="QLabel" name="label">
@@ -226,8 +226,15 @@
       </item>
      </layout>
     </item>
-    <item row="1" column="4">
+    <item row="0" column="2">
      <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QPushButton" name="pushButton_test">
+        <property name="text">
+         <string>test</string>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QPushButton" name="videoFromPathsBtn">
         <property name="toolTip">
@@ -273,13 +280,6 @@
       </item>
      </layout>
     </item>
-    <item row="2" column="4">
-     <widget class="QPushButton" name="pushButton_test">
-      <property name="text">
-       <string>test</string>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -287,7 +287,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>859</width>
+     <width>800</width>
      <height>21</height>
     </rect>
    </property>

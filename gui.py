@@ -9,7 +9,7 @@ from timelapse import timelapse, write_video
 class Ui(QtWidgets.QMainWindow):
     def __init__(self):
         super(Ui, self).__init__() # Call the inherited classes __init__ method
-        uic.loadUi('mainWindow.ui', self) # Load the .ui file
+        uic.loadUi('timelapse_cpp/mainwindow.ui', self) # Load the .ui file
         self.show() # Show the GUI
         self.selectFilesBtn.clicked.connect(self.load_files)
         self.clearFilesBtn.clicked.connect(self.clear_files)
